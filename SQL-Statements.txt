@@ -1,0 +1,36 @@
+CREATE TABLE data_sensor (
+  name STRING, time_measured STRING, fertilizer FLOAT, light FLOAT, soil_moisture_percent FLOAT, air_temperature FLOAT
+) WITH (
+  'connector.type' = 'kafka',
+  'connector.version' = 'universal',
+  'connector.topic' = 'sensor_data-all',
+  'format.type' = 'json',
+  'connector.properties.0.key' = 'bootstrap.servers',
+  'connector.properties.0.value' = 'Athena-kafka-1:9092',
+  'connector.properties.1.key' = 'group.id',
+  'connector.properties.1.value' = 'flink-input-group',
+  'connector.startup-mode' = 'earliest-offset'
+);
+
+
+fertilizer: 1
+soil_moisture_percent: 20
+air_temperature: 25
+
+
+CREATE TABLE deviation_target (
+  fertilizer_deviation FLOAT, soil_moisture_percent_deviation FLOAT, air_temperature_deviation FLOAT
+) WITH (
+  'connector.type' = 'kafka',
+  'connector.version' = 'universal',
+  'connector.topic' = 'deviation_target',
+  'format.type' = 'json',
+  'connector.properties.0.key' = 'bootstrap.servers',
+  'connector.properties.0.value' = 'Athena-kafka-1:9092',
+  'connector.properties.1.key' = 'group.id',
+  'connector.properties.1.value' = 'flink-output-group'
+);
+
+insert into deviation_target 
+    select truncate((1-fertilizer)*(-1), 2), truncate((20-soil_moisture_percent)*(-1), 2), truncate((25-air_temperature)*(-1), 2) from data_sensor;
+

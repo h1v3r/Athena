@@ -1,0 +1,143 @@
+version: '3'
+services:
+  zookeeper:
+    image: bitnami/zookeeper:3.6.0
+    container_name: Athena-zookeeper-1
+    ports:
+      - 2181
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      Athena-network-1:
+        ipv4_address: 172.28.0.6
+
+  nifi:
+    image: apache/nifi:1.11.4
+    container_name: Athena-nifi-1
+    ports:
+      - 8080:8080
+    environment:
+      - NIFI_WEB_HTTP_PORT=8080
+      - NIFI_CLUSTER_IS_NODE=true
+      - NIFI_CLUSTER_NODE_PROTOCOL_PORT=8082
+      - NIFI_ZK_CONNECT_STRING=zookeeper:2181
+      - NIFI_ELECTION_MAX_WAIT=10 sec
+    depends_on:
+      - zookeeper
+    networks:
+      Athena-network-1:
+        ipv4_address: 172.28.0.5
+
+  # /opt/bitnami/kafka/bin
+  # kafka-topics.sh --list --bootstrap-server localhost:9092
+  # kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic deviation_target --from-beginning
+  kafka:
+    image: 'bitnami/kafka:2.5.0'
+    container_name: Athena-kafka-1
+    ports:
+      - 9092:9092
+      - 29092:29092
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,PLAINTEXT_HOST://:29092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+    depends_on:
+      - zookeeper
+    networks:
+      Athena-network-1:
+        ipv4_address: 172.28.0.7
+
+  sql-client:
+    image: fhueske/flink-sql-training:1-FLINK-1.10-scala_2.11
+    container_name: Athena-sql-client-1
+    command: "java -classpath /opt/data/data-producer.jar com.ververica.sql_training.data_producer.TaxiRecordProducer --input file /opt/data --output kafka kafka:9092 --speedup 10.0"
+    depends_on:
+      - kafka
+      - jobmanager
+      - mysql
+    environment:
+      FLINK_JOBMANAGER_HOST: jobmanager
+      ZOOKEEPER_CONNECT: zookeeper
+      KAFKA_BOOTSTRAP: kafka
+      MYSQL_HOST: mysql
+    networks:
+      Athena-network-1:
+        ipv4_address: 172.28.0.8
+
+  jobmanager:
+    image: flink:1.10.0-scala_2.11
+    container_name: Athena-jobmanager-1
+    hostname: "jobmanager"
+    expose:
+      - "6123"
+    ports:
+      - "8081:8081"
+    command: jobmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+    networks:
+      Athena-network-1:
+        ipv4_address: 172.28.0.9
+
+  taskmanager:
+    image: flink:1.10.0-scala_2.11
+    container_name: Athena-taskmanager-1
+    expose:
+      - "6121"
+      - "6122"
+    depends_on:
+      - jobmanager
+    command: taskmanager
+    links:
+      - jobmanager:jobmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+    networks:
+      Athena-network-1:
+        ipv4_address: 172.28.0.10
+
+  mysql:
+    image: mysql:8.0.19
+    container_name: Athena-mysql-1
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_USER: "flink"
+      MYSQL_PASSWORD: "secret"
+      MYSQL_DATABASE: "flinksql"
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+    networks:
+      Athena-network-1:
+        ipv4_address: 172.28.0.11
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  portainer:
+    container_name: Athena-portainer-1
+    image: portainer/portainer
+    ports:
+     - "9000:9000"
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  Athena-network-1:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 172.28.0.0/16
