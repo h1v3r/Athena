@@ -8,10 +8,49 @@ CREATE TABLE test (
   'connector.properties.0.key' = 'bootstrap.servers',
   'connector.properties.0.value' = 'Athena-kafka-1:9092',
   'connector.properties.1.key' = 'group.id',
-  'connector.properties.1.value' = 'flink-output-group'
+  'connector.properties.1.value' = 'flink-output-group',
+  'update-mode' = 'retract'
 );
 
+CREATE TABLE test_2 (
+  name STRING, fertilizer_avg FLOAT, primary key (name)
+) WITH (
+  'connector.type' = 'kafka',
+  'connector.version' = 'universal',
+  'connector.topic' = 'test_topic_avg-1',
+  'format.type' = 'json',
+  'connector.properties.0.key' = 'bootstrap.servers',
+  'connector.properties.0.value' = 'Athena-kafka-1:9092',
+  'connector.properties.1.key' = 'group.id',
+  'connector.properties.1.value' = 'flink-output-group',
+  'update-mode' = 'append'
+);
+
+
 insert into test select avg(fertilizer) from data_sensor;
-select name, avg(fertilizer) as avg_fertilizer  from data_sensor group by name;
+insert into test_2 select name, avg(fertilizer) as avg_fertilizer  from data_sensor group by name;
+
+
+
+CREATE TABLE test_2 (
+  fertilizer FLOAT
+) WITH (
+  'connector.type' = 'elasticsearch',
+  'connector.version' = '7',
+  'connector.hosts'   = 'Athena-elastic-1:9200',
+  'connector.index'   = 'test1',
+  'connector.document.type' = 'analysis'
+);
+
+
+insert into test_2 select fertilizer from data_sensor;
+
+
+
+
 
 Kafka_Consumer in NiFi. 
+
+
+
+

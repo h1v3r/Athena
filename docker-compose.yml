@@ -49,6 +49,7 @@ services:
       Athena-network-1:
         ipv4_address: 172.28.0.7
 
+  # sudo docker exec -it Athena-sql-client-1 ./sql-client.sh
   sql-client:
     image: fhueske/flink-sql-training:1-FLINK-1.10-scala_2.11
     container_name: Athena-sql-client-1
@@ -108,24 +109,34 @@ services:
       MYSQL_DATABASE: "flinksql"
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
     volumes:
-      - ./mysql:/docker-entrypoint-initdb.d
+      - ./mysql:/docker-entrypoint-initdb.d   #TODO: Ordner auslagern aus GitHub Directory!!!!!
     networks:
       Athena-network-1:
         ipv4_address: 172.28.0.11
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  # sysctl -w vm.max_map_count=262144
+  elastic-1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
+    container_name: Athena-elastic-1
+    environment:
+      - node.name=elastic-1
+      - cluster.name=es-docker-cluster
+      #- discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=elastic-1   #,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./data01:/usr/share/elasticsearch/data  #auch auslagern !!!!
+    ports:
+      - 9200:9200
+    networks:
+      Athena-network-1:
+        ipv4_address: 172.28.0.12
+  
 
   portainer:
     container_name: Athena-portainer-1
@@ -134,6 +145,10 @@ services:
      - "9000:9000"
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
+
+#volumes:
+ # data01:
+  #  driver: local
 
 networks:
   Athena-network-1:
