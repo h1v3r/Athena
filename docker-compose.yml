@@ -109,7 +109,7 @@ services:
       MYSQL_DATABASE: "flinksql"
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
     volumes:
-      - ../Athena_Data/mysql:/docker-entrypoint-initdb.d   #TODO: Ordner auslagern aus GitHub Directory!!!!!
+      - ../Athena_Data/mysql:/docker-entrypoint-initdb.d 
     networks:
       Athena-network-1:
         ipv4_address: 172.28.0.11
@@ -137,6 +137,17 @@ services:
       Athena-network-1:
         ipv4_address: 172.28.0.12
   
+  kib01:
+    image: docker.elastic.co/kibana/kibana:7.7.0
+    container_name: Athena-kibana-1
+    ports:
+      - 5601:5601
+    environment:
+      ELASTICSEARCH_URL: http://172.28.0.12:9200
+      ELASTICSEARCH_HOSTS: http://172.28.0.12:9200
+    networks:
+      - Athena-network-1
+
   portainer:
     container_name: Athena-portainer-1
     image: portainer/portainer

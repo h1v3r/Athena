@@ -36,8 +36,8 @@ CREATE TABLE test_2 (
   fertilizer FLOAT
 ) WITH (
   'connector.type' = 'elasticsearch',
-  'connector.version' = '7',
-  'connector.hosts'   = 'Athena-elastic-1:9200',
+  'connector.version' = '7.7.0',
+  'connector.hosts'   = '172.28.0.12:9200',
   'connector.index'   = 'test1',
   'connector.document.type' = 'analysis'
 );
