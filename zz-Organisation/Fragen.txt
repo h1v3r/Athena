@@ -54,3 +54,6 @@ Kafka_Consumer in NiFi.
 
 
 
+CREATE TABLE test (
+  fertilizer_avg FLOAT
+) WITH ();
