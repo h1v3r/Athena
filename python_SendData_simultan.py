@@ -53,7 +53,7 @@ while True:
             currentLine = fh_input.readline()
             parts = currentLine.split(',')
 
-            sensorName = "sensor" + sensorNumber
+            sensorName = "sensor" + str(i)
             fertilizer_level = float(parts[1])
             light = float(parts[2])
             soil_moisture_percent = float(parts[3])
@@ -113,4 +113,4 @@ while True:
 
             i = i + 1
 
-        time.sleep(averageTimeBetween)
+        time.sleep(averageTimeBetween/1000)
