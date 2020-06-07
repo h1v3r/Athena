@@ -1,1 +1,1 @@
-# Athena - Elasticsearch suckt
+# Athena - FlinkSQL suckt
