@@ -48,7 +48,9 @@ while True:
         # Do it for each sensor
         i = 1
         now = datetime.now()  # current date and time
-        timestamp = now.strftime("%d-%m-%Y %H:%M:%S")
+        #timestamp = now.strftime("%d-%m-%Y %H:%M:%S")  1994-11-05T13:15:30Z
+        timestamp = now.strftime("%Y-%m-%dT%H:%M:%SZ") 
+
         while i <= sensorNumber:
             currentLine = fh_input.readline()
             parts = currentLine.split(',')
