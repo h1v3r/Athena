@@ -14,7 +14,7 @@ header = {'Content-type': 'application/json'}
 
 print("Default settings? [bool -> true / false]: ")
 defaultInput = input()
-defaultSettings = defaultInput == "true"
+defaultSettings = defaultInput != "false"
 
 if defaultSettings:
     sensorNumber = 5
@@ -38,22 +38,31 @@ else:
 
 seed(420)
 
+
 while True:
+    breakAgain = False
     # Waste first line with header info
     fh_input = open(input_file, "r")
     currentLine = fh_input.readline()
 
     while currentLine != '':
+        if breakAgain:
+            break
 
         # Do it for each sensor
         i = 1
         now = datetime.now()  # current date and time
-        #timestamp = now.strftime("%d-%m-%Y %H:%M:%S")  1994-11-05T13:15:30Z
-        timestamp = now.strftime("%Y-%m-%dT%H:%M:%SZ") 
+        # old version
+        # timestamp = now.strftime("%d-%m-%Y %H:%M:%S")  1994-11-05T13:15:30Z
+        timestamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         while i <= sensorNumber:
             currentLine = fh_input.readline()
             parts = currentLine.split(',')
+
+            if len(parts) < 5:
+                breakAgain = True  # Not very pretty but i dont wanna refactor to a function like I should
+                break
 
             sensorName = "sensor" + str(i)
             fertilizer_level = float(parts[1])
