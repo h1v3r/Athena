@@ -24,6 +24,8 @@ services:
       - NIFI_ELECTION_MAX_WAIT=10 sec
     depends_on:
       - zookeeper
+    volumes:
+      - hdfs_env:/hdfs_env
     networks:
       Athena-network-1:
         ipv4_address: 172.28.0.5
@@ -146,37 +148,78 @@ services:
       ELASTICSEARCH_URL: http://172.28.0.12:9200
       ELASTICSEARCH_HOSTS: http://172.28.0.12:9200
     networks:
-      - Athena-network-1
+      Athena-network-1:
+        ipv4_address: 172.28.0.13
 
-  hdfs-name:
-    image: quay.io/geodocker/hdfs:latest
-    command: name
-    environment:
-      HADOOP_MASTER_ADDRESS: hdfs-name
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    restart: always
     ports:
-      - "50070:50070"
-        # volumes:
-        #   - '/data/gt/hdfs:/data/hdfs'
-  hdfs-sname:
-    image: quay.io/geodocker/hdfs:latest
-    command: sname
+      - 9870:9870
+      - 9001:9001
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+      - hdfs_env:/etc/hadoop
     environment:
-      HADOOP_MASTER_ADDRESS: hdfs-name
-    ports:
-      - "50090:50090"
-    depends_on:
-      - hdfs-name
-        # volumes:
-        #   - '/data/gt/hdfs:/data/hdfs'
-  hdfs-data:
-    image: quay.io/geodocker/hdfs:latest
-    command: data
+      - CLUSTER_NAME=test
+    env_file:
+      - ./hadoop.env
+    networks:
+      Athena-network-1:
+        ipv4_address: 172.28.0.14
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    restart: always
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
     environment:
-      HADOOP_MASTER_ADDRESS: hdfs-name
-    depends_on:
-      - hdfs-name
-        # volumes:
-        #  - '/data/gt/hdfs:/data/hdfs'
+      SERVICE_PRECONDITION: "namenode:9870"
+    env_file:
+      - ./hadoop.env
+    networks:
+      Athena-network-1:
+        ipv4_address: 172.28.0.15
+  
+  resourcemanager:
+    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
+    container_name: resourcemanager
+    restart: always
+    environment:
+      SERVICE_PRECONDITION: "namenode:9001 namenode:9870 datanode:9864"
+    env_file:
+      - ./hadoop.env
+    networks:
+      Athena-network-1:
+        ipv4_address: 172.28.0.16
+
+  nodemanager1:
+    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
+    container_name: nodemanager
+    restart: always
+    environment:
+      SERVICE_PRECONDITION: "namenode:9001 namenode:9870 datanode:9864 resourcemanager:8088"
+    env_file:
+      - ./hadoop.env
+    networks:
+      Athena-network-1:
+        ipv4_address: 172.28.0.17
+  
+  historyserver:
+    image: bde2020/hadoop-historyserver:2.0.0-hadoop3.2.1-java8
+    container_name: historyserver
+    restart: always
+    environment:
+      SERVICE_PRECONDITION: "namenode:9001 namenode:9870 datanode:9864 resourcemanager:8088"
+    volumes:
+      - hadoop_historyserver:/hadoop/yarn/timeline
+    env_file:
+      - ./hadoop.env
+    networks:
+      Athena-network-1:
+        ipv4_address: 172.28.0.18
   
   portainer:
     container_name: Athena-portainer-1
@@ -185,6 +228,15 @@ services:
      - "9000:9000"
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      Athena-network-1:
+        ipv4_address: 172.28.0.19
+
+volumes:
+  hdfs_env:
+  hadoop_namenode:
+  hadoop_datanode:
+  hadoop_historyserver:
 
 networks:
   Athena-network-1:
