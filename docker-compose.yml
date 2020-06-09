@@ -51,71 +51,6 @@ services:
       Athena-network-1:
         ipv4_address: 172.28.0.7
 
-  # sudo docker exec -it Athena-sql-client-1 ./sql-client.sh
-  sql-client:
-    image: fhueske/flink-sql-training:1-FLINK-1.10-scala_2.11
-    container_name: Athena-sql-client-1
-    command: "java -classpath /opt/data/data-producer.jar com.ververica.sql_training.data_producer.TaxiRecordProducer --input file /opt/data --output kafka kafka:9092 --speedup 10.0"
-    depends_on:
-      - kafka
-      - jobmanager
-      - mysql
-    environment:
-      FLINK_JOBMANAGER_HOST: jobmanager
-      ZOOKEEPER_CONNECT: zookeeper
-      KAFKA_BOOTSTRAP: kafka
-      MYSQL_HOST: mysql
-    networks:
-      Athena-network-1:
-        ipv4_address: 172.28.0.8
-
-  jobmanager:
-    image: flink:1.10.0-scala_2.11
-    container_name: Athena-jobmanager-1
-    hostname: "jobmanager"
-    expose:
-      - "6123"
-    ports:
-      - "8081:8081"
-    command: jobmanager
-    environment:
-      - JOB_MANAGER_RPC_ADDRESS=jobmanager
-    networks:
-      Athena-network-1:
-        ipv4_address: 172.28.0.9
-
-  taskmanager:
-    image: flink:1.10.0-scala_2.11
-    container_name: Athena-taskmanager-1
-    expose:
-      - "6121"
-      - "6122"
-    depends_on:
-      - jobmanager
-    command: taskmanager
-    links:
-      - jobmanager:jobmanager
-    environment:
-      - JOB_MANAGER_RPC_ADDRESS=jobmanager
-    networks:
-      Athena-network-1:
-        ipv4_address: 172.28.0.10
-
-  mysql:
-    image: mysql:8.0.19
-    container_name: Athena-mysql-1
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      MYSQL_USER: "flink"
-      MYSQL_PASSWORD: "secret"
-      MYSQL_DATABASE: "flinksql"
-      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-    volumes:
-      - ../Athena_Data/mysql:/docker-entrypoint-initdb.d 
-    networks:
-      Athena-network-1:
-        ipv4_address: 172.28.0.11
-
   # sysctl -w vm.max_map_count=262144
   elastic-1:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
@@ -132,7 +67,10 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - ../Athena_Data/data01:/usr/share/elasticsearch/data
+      - ../Athena_Data/elastic-data:/usr/share/elasticsearch/data
+      - ./elastic-env/c5FMzb7ARkC1VZ7dIgNo8w:/usr/share/elasticsearch/data/nodes/0/indices/c5FMzb7ARkC1VZ7dIgNo8w
+      - ./elastic-env/EYheK8VxQ6qXOxPZRwFEOQ:/usr/share/elasticsearch/data/nodes/0/indices/EYheK8VxQ6qXOxPZRwFEOQ
+      - ./elastic-env/pS9NyLv6Ts6s4ld-bFQi_Q:/usr/share/elasticsearch/data/nodes/0/indices/pS9NyLv6Ts6s4ld-bFQi_Q
     ports:
       - 9200:9200
     networks:
@@ -159,7 +97,7 @@ services:
       - 9870:9870
       - 9001:9001
     volumes:
-      - hadoop_namenode:/hadoop/dfs/name
+      - ../Athena_Data/hdfs-data/namenode:/hadoop/dfs/name
       - hdfs_env:/etc/hadoop
     environment:
       - CLUSTER_NAME=test
@@ -174,7 +112,7 @@ services:
     container_name: datanode
     restart: always
     volumes:
-      - hadoop_datanode:/hadoop/dfs/data
+      - ..Athena_Data/hdfs-data/datanode:/hadoop/dfs/data
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
@@ -214,7 +152,7 @@ services:
     environment:
       SERVICE_PRECONDITION: "namenode:9001 namenode:9870 datanode:9864 resourcemanager:8088"
     volumes:
-      - hadoop_historyserver:/hadoop/yarn/timeline
+      - ../Athena_Data/hdfs-data/historyserver:/hadoop/yarn/timeline
     env_file:
       - ./hadoop.env
     networks:
@@ -234,9 +172,9 @@ services:
 
 volumes:
   hdfs_env:
-  hadoop_namenode:
-  hadoop_datanode:
-  hadoop_historyserver:
+  #hadoop_namenode:
+  #hadoop_datanode:
+  #hadoop_historyserver:
 
 networks:
   Athena-network-1:
