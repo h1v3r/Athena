@@ -1,1 +1,1 @@
-# Athena - FlinkSQL suckt
+# Athena - FlinkSQL and HDFS suckt
