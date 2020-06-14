@@ -82,16 +82,19 @@ With this data frame you can create a view:
 You can select from this view with sql statements and print the result.
 
 `val all_data = spark.sql("select * from sensors")`
+
 `all_data.show()`
 
 You can fot example display all data in a certain time interval (in this example all data on "2020-06-14"),
 
 `val max_for_time = spark.sql("select max(air_temperature), max(fertilizer), max(light), max(soil_moisture_percent) from sensors where time_measured like '2020-06-14%'")`
+
 `max_for_time.show()`
 
 or group by sensor.
 
 `val avg_per_sensor = spark.sql("select name, avg(air_temperature), avg(fertilizer), avg(light), avg(soil_moisture_percent) from sensors group by name order by name")`
+
 `avg_per_sensor.show()`
 
 If you want to export the data you collected you can do that by saving the data at the “/spark-data” directory. This directory is mounted at “../Athena_Data/spark-data” at you host machine. 
