@@ -51,9 +51,9 @@ You can bring all containers down by executing
 
 inside the git folder. Use 
 
-`sudoc docker-compose up -d`
+`sudo docker-compose up -d`
 
-to bring them up again. 
+to bring them up again. However you need to setup NiFi again. 
 
 ### Remove Athena
 First you want to stop the API. Simply click into the shell where you have started the API and press "Ctrl-C".
