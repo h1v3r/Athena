@@ -1,4 +1,7 @@
-
+spark/bin/spark-shell
+val path="hdfs://namenode:9000/GreenhouseArchiveTest1"
+val sensorDF = spark.read.json(path)
+sensorDF.printSchema()
 sensorDF.createOrReplaceTempView("sensors")
 
 val all_data = spark.sql("select * from sensors")

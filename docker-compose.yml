@@ -51,7 +51,6 @@ services:
       Athena-network-1:
         ipv4_address: 172.28.0.7
 
-  # sysctl -w vm.max_map_count=262144
   elastic-1:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
     container_name: Athena-elastic-1
@@ -59,7 +58,7 @@ services:
       - node.name=elastic-1
       - cluster.name=es-docker-cluster
       - discovery.seed_hosts=es02,es03
-      - cluster.initial_master_nodes=elastic-1   #,es02,es03
+      - cluster.initial_master_nodes=elastic-1  
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
@@ -68,7 +67,6 @@ services:
         hard: -1
     volumes:
       - ../Athena_Data/elastic-data:/usr/share/elasticsearch/data
-      #- elastic_data:/usr/share/elasticsearch/data
       - ./elastic-env/c5FMzb7ARkC1VZ7dIgNo8w:/usr/share/elasticsearch/data/nodes/0/indices/c5FMzb7ARkC1VZ7dIgNo8w
       - ./elastic-env/EYheK8VxQ6qXOxPZRwFEOQ:/usr/share/elasticsearch/data/nodes/0/indices/EYheK8VxQ6qXOxPZRwFEOQ
       - ./elastic-env/pS9NyLv6Ts6s4ld-bFQi_Q:/usr/share/elasticsearch/data/nodes/0/indices/pS9NyLv6Ts6s4ld-bFQi_Q
@@ -92,7 +90,7 @@ services:
 
   namenode:
     image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
-    container_name: namenode
+    container_name: Athena-namenode-1
     restart: always
     ports:
       - 9870:9870
@@ -110,7 +108,7 @@ services:
 
   datanode:
     image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
-    container_name: datanode
+    container_name: Athena-datanode-1
     restart: always
     volumes:
       - hadoop_datanode:/hadoop/dfs/data
@@ -121,56 +119,10 @@ services:
     networks:
       Athena-network-1:
         ipv4_address: 172.28.0.15
-  
-#  resourcemanager:
-#    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
-#    container_name: resourcemanager
-#    restart: always
-#    environment:
-#      SERVICE_PRECONDITION: "namenode:9001 namenode:9870 datanode:9864"
-#    env_file:
-#      - ./hadoop.env
-#    networks:
-#      Athena-network-1:
-#        ipv4_address: 172.28.0.16
 
-#  nodemanager1:
-#    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
-#    container_name: nodemanager
-#    restart: always
-#    environment:
-#      SERVICE_PRECONDITION: "namenode:9001 namenode:9870 datanode:9864 resourcemanager:8088"
-#    env_file:
-#      - ./hadoop.env
-#    networks:
-#      Athena-network-1:
-#        ipv4_address: 172.28.0.17
-  
-#  historyserver:
-#    image: bde2020/hadoop-historyserver:2.0.0-hadoop3.2.1-java8
-#    container_name: historyserver
-#    restart: always
-#    environment:
-#      SERVICE_PRECONDITION: "namenode:9001 namenode:9870 datanode:9864 resourcemanager:8088"
-#    volumes:
-#      - ../Athena_Data/hdfs-data/historyserver:/hadoop/yarn/timeline
-#    env_file:
-#      - ./hadoop.env
-#    networks:
-#      Athena-network-1:
-#        ipv4_address: 172.28.0.18
-
-  # spark/bin/spark-shell
-  # val rdd = sc.textFile("hdfs://namenode:9000/GreenhouseArchiveTest1")
-  # val path="hdfs://namenode:9000/GreenhouseArchiveTest1"
-  # val sensorDF = spark.read.json(path)
-  # sensorDF.printSchema()
-  # sensorDF.createOrReplaceTempView("sensors")
-  # val temperature = spark.sql("select air_temperature from sensors")
-  # temperature.show()
   spark-master:
     image: bde2020/spark-master:2.4.5-hadoop2.7
-    container_name: spark-master
+    container_name: Athena-spark-master-1
     ports:
       - "8082:8080"
       - "7077:7077"
@@ -183,7 +135,7 @@ services:
 
   spark-worker-1:
     image: bde2020/spark-worker:2.4.5-hadoop2.7
-    container_name: spark-worker-1
+    container_name: Athena-spark-worker-1
     depends_on:
       - spark-master
     ports:
@@ -210,9 +162,6 @@ volumes:
   hdfs_env:
   hadoop_namenode:
   hadoop_datanode:
- # hadoop_historyserver:
-  elastic_data:
-    driver: local
 
 networks:
   Athena-network-1:
