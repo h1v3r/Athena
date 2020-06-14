@@ -20,14 +20,18 @@ Now you can start the "init_athena" script. You need to do this as root too.
 
 `sudo ./init_athena.sh`
 
-Now everything is starting up. 
+Now everything is starting up. Probably there is a problem with Elasticsearch and permissions. Try 
+
+`sudo chmod 777 ../Athena_Data`
+
+in the git folder. It may solves the problem. 
 
 ### Set up NiFi
 Next you need to implement the template for NiFi. NiFi will be available at: 
 
 `localhost:8080/nifi/`
 
-It may take a bit till it is up and running. On the NiFi web interface you need to navigate you curse over the grid. Then right click on it and select “Upload template”. A window will pop up where you can select the template you want to upload. Click on the icon with the magnifying glass. If you have done that, a window will open up where you can select the template you want to upload. Simply navigate to your git folder and select “NiFi-Template”. After this you must click “upload” and the template will be uploaded. 
+It may take a bit till it is up and running. On the NiFi web interface you need to navigate you curse over the grid. Then right click on it and select “Upload template”. A window will pop up where you can select the template you want to upload. Click on the icon with the magnifying glass. If you have done that, a window will open up where you can select the template you want to upload. Simply navigate to your git folder and select “NiFi-Template.xml”. After this you must click “upload” and the template will be uploaded. 
 
 Now navigate to the icon with the name “Template” and drag and drop it into the grid. Now you can choose what template you want to use. Select “NiFi-Template” and click “ADD”. The Template should appear on the grid. 
 
@@ -39,6 +43,17 @@ After you have set up NiFi you can start the API with:
 `python python_SendData_simultan.py`
 
 To accept the default settings of the script click enter.
+
+### Pause the Program
+You can bring all containers down by executing 
+
+`sudo docker-compose down` 
+
+inside the git folder. Use 
+
+`sudoc docker-compose up -d`
+
+to bring them up again. 
 
 ### Remove Athena
 First you want to stop the API. Simply click into the shell where you have started the API and press "Ctrl-C".
