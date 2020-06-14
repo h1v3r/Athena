@@ -68,6 +68,7 @@ services:
         hard: -1
     volumes:
       - ../Athena_Data/elastic-data:/usr/share/elasticsearch/data
+      #- elastic_data:/usr/share/elasticsearch/data
       - ./elastic-env/c5FMzb7ARkC1VZ7dIgNo8w:/usr/share/elasticsearch/data/nodes/0/indices/c5FMzb7ARkC1VZ7dIgNo8w
       - ./elastic-env/EYheK8VxQ6qXOxPZRwFEOQ:/usr/share/elasticsearch/data/nodes/0/indices/EYheK8VxQ6qXOxPZRwFEOQ
       - ./elastic-env/pS9NyLv6Ts6s4ld-bFQi_Q:/usr/share/elasticsearch/data/nodes/0/indices/pS9NyLv6Ts6s4ld-bFQi_Q
@@ -161,6 +162,12 @@ services:
 
   # spark/bin/spark-shell
   # val rdd = sc.textFile("hdfs://namenode:9000/GreenhouseArchiveTest1")
+  # val path="hdfs://namenode:9000/GreenhouseArchiveTest1"
+  # val sensorDF = spark.read.json(path)
+  # sensorDF.printSchema()
+  # sensorDF.createOrReplaceTempView("sensors")
+  # val temperature = spark.sql("select air_temperature from sensors")
+  # temperature.show()
   spark-master:
     image: bde2020/spark-master:2.4.5-hadoop2.7
     container_name: spark-master
@@ -204,6 +211,8 @@ volumes:
   hadoop_namenode:
   hadoop_datanode:
  # hadoop_historyserver:
+  elastic_data:
+    driver: local
 
 networks:
   Athena-network-1:

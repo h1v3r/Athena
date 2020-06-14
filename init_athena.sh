@@ -1,0 +1,13 @@
+#!/bin/sh
+
+#Build directories for Elastic
+mkdir -p ../Athena_Data/elastic-data/nodes/0
+chmod 775 ../Athena_Data/elastic-data/nodes/0
+
+#Set max virtual memory for Elastic
+sysctl -w vm.max_map_count=262144
+
+
+#Docker
+systemctl start docker
+docker-compose up -d

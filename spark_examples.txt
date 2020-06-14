@@ -1,0 +1,12 @@
+
+sensorDF.createOrReplaceTempView("sensors")
+
+val all_data = spark.sql("select * from sensors")
+all_data.show()
+
+val max_for_time = spark.sql("select max(air_temperature), max(fertilizer), max(light), max(soil_moisture_percent) from sensors where time_measured like '2020-06-14%'")
+
+val avg_per_sensor = spark.sql("select name, avg(air_temperature), avg(fertilizer), avg(light), avg(soil_moisture_percent) from sensors group by name order by name")
+
+val op= avg_per_sensor.rdd.map(_.toString().replace("[","").replace("]", "")).saveAsTextFile("./test") 
+
