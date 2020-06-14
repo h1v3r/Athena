@@ -40,7 +40,64 @@ After you have set up NiFi you can start the API with:
 
 To accept the default settings of the script click enter.
 
-### Analyse the data with Kibana
+### Remove Athena
+First you want to stop the API. Simply click into the shell where you have started the API and press "Ctrl-C".
+Next you simply have to execute the "rm_athena.sh" script. 
+
+`sudo ./rm_athena.sh`
+
+This will delete all data related to the project except the git repo and date in relation with docker. 
+
+### Portainer
+The "docker-compose" includes a Portainer container witch can be accessed at:
+
+`localhost:9000`
+
+## Analyse the data with Kibana
+Kibana will be available at: 
+
+`localhost:5601`
+
+After you have entered the Kibana web interface you need to click on “Dashboard” at the menu on the left. At “Dashboards” select “Greenhouse_Dashboard”. 
+
+Now you are at the Dashboard. On the top you will find a consol where you can group by “Sensor Name” or select ranges for the parameters. Below that you can find diagrams for the count of measurements per time interval and a pie chart where you can see the shars of each sensor. Under those diagrams you can find four more, each representing one parameter (Air Temperature, Fertilizer, Light and Soil Moisture (in percent)). Echt graph displays the maximum, minimum and median per time interval for the corresponding reading. 
+
+## Analyse HDFS with Spark (example)
+To open the spark shell you need to access the Spark container with: 
+
+`sudo docker exec -it Athena-spark-master-1 /bin/bash`
+
+Then you can open the spark shell.
+
+`./spark/bin/spark-shell`
+
+On the spark shell ypu first need to create a data frame. 
+
+`val sensorDF = spark.read.json("hdfs://namenode:9000/GreenhouseArchiveTest1")`
+
+With this data frame you can create a view: 
+
+`sensorDF.createOrReplaceTempView("sensors")`
+
+You can select from this view with sql statements and print the result.
+
+`val all_data = spark.sql("select * from sensors")`
+`all_data.show()`
+
+You can fot example display all data in a certain time interval (in this example all data on "2020-06-14"),
+
+`val max_for_time = spark.sql("select max(air_temperature), max(fertilizer), max(light), max(soil_moisture_percent) from sensors where time_measured like '2020-06-14%'")`
+`max_for_time.show()`
+
+or group by sensor.
+
+`val avg_per_sensor = spark.sql("select name, avg(air_temperature), avg(fertilizer), avg(light), avg(soil_moisture_percent) from sensors group by name order by name")`
+`avg_per_sensor.show()`
+
+If you want to export the data you collected you can do that by saving the data at the “/spark-data” directory. This directory is mounted at “../Athena_Data/spark-data” at you host machine. 
+
+`val op= avg_per_sensor.rdd.map(_.toString().replace("[","").replace("]", "")).saveAsTextFile("/spark-data/test")`
+
 
 
 

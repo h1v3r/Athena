@@ -129,6 +129,8 @@ services:
     environment:
       - INIT_DAEMON_STEP=setup_spark
       - "constraint:node==<yourmasternode>"
+    volumes:
+      - ../Athena_Data/spark-data:/spark-data
     networks:
       Athena-network-1:
         ipv4_address: 172.28.0.8
