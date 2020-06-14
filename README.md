@@ -2,6 +2,7 @@
 
 ## How to start up Athena
 
+### Clone from GitHub
 First you need to download the project from GitHub
 
 `git clone https://github.com/h1v3r/Athena.git`
@@ -10,6 +11,7 @@ After that you cange into the git folder you just downloaded.
 
 `cd Athena`
 
+### Start the containers
 Before you can start everything up, you need to change the the permissions for two scripts. You will need root privileges for that.  
 
 `sudo chmod 645 init_athena.sh rm_athena.sh`
@@ -20,7 +22,7 @@ Now you can start the "init_athena" script. You need to do this as root too.
 
 Now everything is starting up. 
 
-
+### Set up NiFi
 Next you need to implement the template for NiFi. NiFi will be available at: 
 
 `localhost:8080/nifi/`
@@ -31,12 +33,15 @@ Now navigate to the icon with the name “Template” and drag and drop it into 
 
 First you need to click somewhere on the grid to dis-select everything. The template consists of many processors (large and rectangular). At every processor you can find a red square which indicates that the processor is turned off. To turn a processor on you right click on it and select start. You need to do this for every processor. 
 
-
+### Start the API
 After you have set up NiFi you can start the API with: 
 
 `python python_SendData_simultan.py`
 
-To accept the default settings of the script click enter. 
+To accept the default settings of the script click enter.
+
+### Analyse the data with Kibana
+
 
 
 
