@@ -3,7 +3,7 @@
 ## How to start up Athena
 
 ### Prerequirements
-You need to install [**docker**](https://www.docker.com/) as well as [**docker-compose**](https://docs.docker.com/compose/). On an [Arch Linux](https://i.redd.it/tcdhu46p4y451.jpg) (:heart_eyes:) System this can be done with:
+You need to install [**docker**](https://www.docker.com/) as well as [**docker-compose**](https://docs.docker.com/compose/). On an [**Arch Linux**](https://i.redd.it/tcdhu46p4y451.jpg) System this can be done with:
 
 `sudo pacman -S docker docker-compose`
 
