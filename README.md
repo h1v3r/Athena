@@ -2,6 +2,9 @@
 
 ## How to start up Athena
 
+### Prerequirements
+You need to install "docker" as well as "docker-compose". 
+
 ### Clone from GitHub
 First you need to download the project from GitHub
 
