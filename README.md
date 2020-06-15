@@ -29,7 +29,7 @@ Now everything is starting up. Probably there is a problem with Elasticsearch an
 
 `sudo chmod 777 ../Athena_Data`
 
-in the git folder. It may solves the problem. 
+in the git folder. It may solve the problem. 
 
 ### Set up NiFi
 Next you need to implement the template for NiFi. NiFi will be available at: 
