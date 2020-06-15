@@ -3,12 +3,12 @@
 ## How to start up Athena
 
 ### Prerequirements
-You need to install [**docker**](https://www.docker.com/) as well as **docker-compose**.
+You need to install [**docker**](https://www.docker.com/) as well as [**docker-compose**](https://docs.docker.com/compose/). On an Arch Linux System this can be done with:
 
-https://www.docker.com/
+`sudo pacman -S docker docker-compose`
 
 ### Clone from GitHub
-First you need to download the project from GitHub
+First you need to download the project from GitHub.
 
 `git clone https://github.com/h1v3r/Athena.git`
 
