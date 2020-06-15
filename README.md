@@ -87,6 +87,8 @@ Now you should see a few rows added to the list including the index "testindex2"
 
 Now you are at the Dashboard. On the top you will find a consol where you can group by “Sensor Name” or select ranges for the parameters. Below that you can find diagrams for the count of measurements per time interval and a pie chart where you can see the shars of each sensor. Under those diagrams you can find four more, each representing one parameter (Air Temperature, Fertilizer, Light and Soil Moisture (in percent)). Echt graph displays the maximum, minimum and median per time interval for the corresponding reading. 
 
+If you get the message "No data available" at the dashboard screen, try changing the time window at the top right of the window to a different intervall (e.g. today).
+
 ## Analyse HDFS with Spark (example)
 To open the spark shell you need to access the Spark container with: 
 
