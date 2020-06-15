@@ -50,6 +50,8 @@ After you have set up NiFi you can start the API with:
 To accept the default settings of the script click enter.
 
 ### Pause the Program
+The following steps "Pause the Program", "Remove Athena" and "Portainer" are optional and not needed for the workflow. It provides addidional informations to maximize your docker experience or stop and remove the whole application when you are done.
+
 You can bring all containers down by executing 
 
 `sudo docker-compose down` 
@@ -79,6 +81,9 @@ Kibana will be available at:
 `localhost:5601`
 
 After you have entered the Kibana web interface you need to click on “Dashboard” at the menu on the left. At “Dashboards” select “Greenhouse_Dashboard”. 
+
+If you are not able to see the dashboard and you get the message that you need to define an index first, than click on "Management" at the menu on the left. Under the header "Kibana" you will find the point "Saved Objects". After clicking that, there should be an option to import a kibana file which is located in your directory at "./zz-Archive/Kibana-save-1.ndjson
+Now you should see a few rows added to the list including the index "testindex2" where our data is stored and "Greenhouse_Dashboard" where the Dashboard is located. Either click on it or go the menu point "Dashboards" at the menu on the left and choose the correct Dashboard.
 
 Now you are at the Dashboard. On the top you will find a consol where you can group by “Sensor Name” or select ranges for the parameters. Below that you can find diagrams for the count of measurements per time interval and a pie chart where you can see the shars of each sensor. Under those diagrams you can find four more, each representing one parameter (Air Temperature, Fertilizer, Light and Soil Moisture (in percent)). Echt graph displays the maximum, minimum and median per time interval for the corresponding reading. 
 
