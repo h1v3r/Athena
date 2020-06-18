@@ -12,12 +12,12 @@ First you need to download the project from GitHub.
 
 `git clone https://github.com/h1v3r/Athena.git`
 
-After that you cange into the git folder you just downloaded. 
+After that you change into the git folder you just downloaded. 
 
 `cd Athena`
 
 ### Start the containers
-Before you can start everything up, you need to change the the permissions for two scripts. You will need root privileges for that.  
+Before you can start everything up, you need to change the permissions for two scripts. You will need root privileges for that.  
 
 `sudo chmod 645 init_athena.sh rm_athena.sh`
 
@@ -25,7 +25,7 @@ Now you can start the "init_athena" script. You need to do this as root too.
 
 `sudo ./init_athena.sh`
 
-Now everything is starting up. Probably there is a problem with Elasticsearch and permissions. Try 
+Now everything is starting up. If there is a problem with Elasticsearch and permissions, try:
 
 `sudo chmod 777 ../Athena_Data`
 
@@ -50,7 +50,7 @@ After you have set up NiFi you can start the API with:
 To accept the default settings of the script click enter.
 
 ### Pause the Program
-The following steps "Pause the Program", "Remove Athena" and "Portainer" are optional and not needed for the workflow. It provides addidional informations to maximize your docker experience or stop and remove the whole application when you are done.
+The following steps "Pause the Program", "Remove Athena" and "Portainer" are optional and not needed for the workflow. It provides additional information’s to maximize your docker experience or stop and remove the whole application when you are done.
 
 You can bring all containers down by executing 
 
@@ -60,7 +60,7 @@ inside the git folder. Use
 
 `sudo docker-compose up -d`
 
-to bring them up again. However you need to setup NiFi again. 
+to bring them up again. However, you need to setup NiFi again. 
 
 ### Remove Athena
 First you want to stop the API. Simply click into the shell where you have started the API and press "Ctrl-C".
@@ -71,7 +71,7 @@ Next you simply have to execute the "rm_athena.sh" script.
 This will delete all data related to the project except the git repo and date in relation with docker. 
 
 ### Portainer
-The "docker-compose" includes a Portainer container witch can be accessed at:
+The "docker-compose" includes a Portainer container which can be accessed at:
 
 `localhost:9000`
 
@@ -82,12 +82,12 @@ Kibana will be available at:
 
 After you have entered the Kibana web interface you need to click on “Dashboard” at the menu on the left. At “Dashboards” select “Greenhouse_Dashboard”. 
 
-If you are not able to see the dashboard and you get the message that you need to define an index first, than click on "Management" at the menu on the left. Under the header "Kibana" you will find the point "Saved Objects". After clicking that, there should be an option to import a kibana file which is located in your directory at "./zz-Archive/Kibana-save-1.ndjson
+If you are not able to see the dashboard and you get the message that you need to define an index first, then click on "Management" at the menu on the left. Under the header "Kibana" you will find the point "Saved Objects". After clicking that, there should be an option to import a kibana file which is located in your directory at "./zz-Archive/Kibana-save-1.ndjson
 Now you should see a few rows added to the list including the index "testindex2" where our data is stored and "Greenhouse_Dashboard" where the Dashboard is located. Either click on it or go the menu point "Dashboards" at the menu on the left and choose the correct Dashboard.
 
-Now you are at the Dashboard. On the top you will find a consol where you can group by “Sensor Name” or select ranges for the parameters. Below that you can find diagrams for the count of measurements per time interval and a pie chart where you can see the shars of each sensor. Under those diagrams you can find four more, each representing one parameter (Air Temperature, Fertilizer, Light and Soil Moisture (in percent)). Echt graph displays the maximum, minimum and median per time interval for the corresponding reading. 
+Now you are at the Dashboard. On the top you will find a console where you can group by “Sensor Name” or select ranges for the parameters. Below that you can find diagrams for the count of measurements per time interval and a pie chart where you can see the shares  of each sensor. Under those diagrams you can find four more, each representing one parameter (Air Temperature, Fertilizer, Light and Soil Moisture (in percent)). Each graph displays the maximum, minimum and median per time interval for the corresponding reading. 
 
-If you get the message "No data available" at the dashboard screen, try changing the time window at the top right of the window to a different intervall (e.g. today).
+If you get the message "No data available" at the dashboard screen, try changing the time window at the top right of the window to a different interval (e.g. today).
 
 ## Analyse HDFS with Spark (example)
 To open the spark shell you need to access the Spark container with: 
@@ -98,7 +98,7 @@ Then you can open the spark shell.
 
 `./spark/bin/spark-shell`
 
-On the spark shell ypu first need to create a data frame. 
+On the spark shell you first need to create a data frame. 
 
 `val sensorDF = spark.read.json("hdfs://namenode:9000/GreenhouseArchiveTest1")`
 
@@ -112,7 +112,7 @@ You can select from this view with sql statements and print the result.
 
 `all_data.show()`
 
-You can fot example display all data in a certain time interval (in this example all data on "2020-06-14"),
+You can make an example display of all data in a certain time interval (in this example all data on "2020-06-14"),
 
 `val max_for_time = spark.sql("select max(air_temperature), max(fertilizer), max(light), max(soil_moisture_percent) from sensors where time_measured like '2020-06-14%'")`
 
